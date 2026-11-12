@@ -215,7 +215,7 @@ const StatsTab = memo(function StatsTab({
         <h3>Resumen</h3>
         <div className="wc-numeros">
           <Dato valor={st.total.toLocaleString('es')} label="mensajes" />
-          <Dato valor={st.diasActivos.toLocaleString('es')} label="días hablando" />
+          <Dato valor={st.diasHablando.toLocaleString('es')} label="días hablando" />
           <Dato valor={minutosATexto(st.hablandoMs / Math.max(st.diasActivos, 1))} label="promedio charlando al día" />
         </div>
         {autores.map(([autor, total]) => (
@@ -229,6 +229,7 @@ const StatsTab = memo(function StatsTab({
             </span>
           </div>
         ))}
+        <p className="wc-suave">Contados desde el 5 de julio, cuando empezaron a hablar.</p>
         <p className="wc-suave">
           Primer mensaje: {st.primero ? fechaCorta(st.primero) : '—'} · Último: {st.ultimo ? fechaCorta(st.ultimo) : '—'}
         </p>

@@ -156,6 +156,40 @@
   color: var(--texto-2);
 }
 
+.wc-subida-caja .wc-mapeo-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--texto);
+}
+
+.wc-mapeo-burbuja {
+  font-size: 12px;
+  font-weight: 400;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.wc-mapeo-burbuja.verde {
+  background: var(--verde-claro);
+  color: #fff;
+}
+
+.wc-mapeo-burbuja.blanca {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  color: var(--texto-2);
+}
+
+.wc-subida-caja .wc-mapeo-en {
+  display: block;
+  font-size: 12px;
+  color: var(--texto-2);
+  margin-top: 8px;
+}
+
 .wc-subida-caja select {
   width: 100%;
   margin-top: 4px;

@@ -18,6 +18,8 @@ export const MEDIA_INFO: Record<MediaTipo, { icono: string; label: string }> = {
 
 export const NOMBRE_MIO = 'Moises'
 export const NOMBRE_ELLA = 'Jania'
+/** Día en que empezaron a hablar (por Insta), aunque el export de WhatsApp empiece después. */
+export const INICIO_HABLANDO = new Date(2026, 6, 5)
 
 export const ZONAS: Array<{ off: number; label: string }> = [
   { off: -6, label: '🇲🇽 México (UTC−6)' },
@@ -58,6 +60,7 @@ export interface Estadisticas {
   porHoraAutor: Record<string, number[]>
   porDiaSemana: number[]
   diasActivos: number
+  diasHablando: number
   topDias: Array<{ ts: number; total: number; id: number }>
   mediaPorAutor: Record<string, Record<MediaTipo, number>>
   respuestaMediana: Record<string, number>
@@ -423,6 +426,11 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
   }
 
   const dias = Object.values(porDia).sort((a, b) => a.ts - b.ts)
+  const hoy = new Date()
+  const diasHablando =
+    Math.round(
+      (new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).getTime() - INICIO_HABLANDO.getTime()) / 86400000,
+    ) + 1
 
   const emojis: Record<string, Array<[string, number]>> = {}
   for (const [autor, mapa] of Object.entries(emojisMap)) {
@@ -446,6 +454,7 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
     porHoraAutor,
     porDiaSemana,
     diasActivos: dias.length,
+    diasHablando,
     topDias: Object.values(porDia)
       .sort((a, b) => b.total - a.total)
       .slice(0, 5),

@@ -17,10 +17,28 @@ export default function Upload({ onConfirmar }: { onConfirmar: (chat: Chat, mape
     setProcesando(true)
     try {
       const c = await parsearArchivo(file)
-      const otros = c.emisores.filter((e) => e !== 'Tú')
-      setYo('Tú')
-      setElla(otros[0] ?? c.emisores.find((e) => e !== 'Tú') ?? '')
-      if (c.emisores.length === 1) setYo(c.emisores[0])
+      // Defaults: quien exportó aparece como «Tú»; si el archivo trae los nombres
+      // reales, se respetan (así un export hecho desde el celular de ella asigna bien).
+      const emisores = c.emisores
+      const conNombreDe = (n: string) => emisores.find((e) => e !== 'Tú' && e.toLowerCase().includes(n.toLowerCase()))
+      const mioEnArchivo = conNombreDe(NOMBRE_MIO)
+      const ellaEnArchivo = conNombreDe(NOMBRE_ELLA)
+      const hayTu = emisores.includes('Tú')
+      let defYo: string
+      let defElla: string
+      if (mioEnArchivo) {
+        defYo = mioEnArchivo
+        defElla = hayTu ? 'Tú' : (ellaEnArchivo ?? emisores.find((e) => e !== mioEnArchivo) ?? '')
+      } else if (hayTu) {
+        defYo = 'Tú'
+        defElla = ellaEnArchivo ?? emisores.find((e) => e !== 'Tú') ?? ''
+      } else {
+        defYo = emisores[0] ?? ''
+        defElla = emisores[1] ?? ''
+      }
+      if (emisores.length === 1) defYo = emisores[0]
+      setYo(defYo)
+      setElla(defElla)
       setChat(c)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo leer el archivo.')
@@ -42,23 +60,33 @@ export default function Upload({ onConfirmar }: { onConfirmar: (chat: Chat, mape
           <p>
             {chat.mensajes.length.toLocaleString('es')} mensajes · {chat.emisores.length} personas
           </p>
-          <p className="wc-suave">¿Quién es quién? Así pintamos las burbujas bien.</p>
-          <label>
-            {NOMBRE_MIO} (derecha, verde)
+          <p className="wc-suave">
+            ¿Quién es quién? Así pintamos las burbujas bien: elige con qué nombre aparece cada persona en el archivo.
+          </p>
+          <label className="wc-mapeo">
+            <span className="wc-mapeo-cab">
+              <b>{NOMBRE_MIO}</b>
+              <span className="wc-mapeo-burbuja verde">derecha, verde</span>
+            </span>
+            <span className="wc-mapeo-en">En el archivo aparece como:</span>
             <select value={yo} onChange={(e) => setYo(e.target.value)}>
               {chat.emisores.map((e) => (
                 <option key={e} value={e}>
-                  {e}
+                  {e === 'Tú' ? 'Tú (quien exportó el archivo)' : e}
                 </option>
               ))}
             </select>
           </label>
-          <label>
-            {NOMBRE_ELLA} (izquierda, blanca)
+          <label className="wc-mapeo">
+            <span className="wc-mapeo-cab">
+              <b>{NOMBRE_ELLA}</b>
+              <span className="wc-mapeo-burbuja blanca">izquierda, blanca</span>
+            </span>
+            <span className="wc-mapeo-en">En el archivo aparece como:</span>
             <select value={ella} onChange={(e) => setElla(e.target.value)}>
               {chat.emisores.map((e) => (
                 <option key={e} value={e}>
-                  {e}
+                  {e === 'Tú' ? 'Tú (quien exportó el archivo)' : e}
                 </option>
               ))}
             </select>
