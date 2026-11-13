@@ -68,7 +68,7 @@ export interface Estadisticas {
   respuestaTramos: Record<string, [number, number, number, number, number]>
   respuestaMeses: Array<{ ts: number; mediana: number }>
   respuestaTendencia: { inicio: number; fin: number } | null
-  respuestaRecord: { rapida: { gap: number; autor: string; ts: number } | null; tardia: { gap: number; autor: string; ts: number } | null }
+  respuestaRecord: { rapida: { gap: number; autor: string; ts: number } | null }
   eliminados: Record<string, number>
   pendientes: Record<string, number>
   palabrasTotal: Record<string, number>
@@ -77,8 +77,6 @@ export interface Estadisticas {
 inicia: Array<{ umbral: number; porAutor: Record<string, number> }>
   mananas: Record<string, number>
   noches: Record<string, number>
-  mananasDias: Record<string, number>
-  nochesDiasAutor: Record<string, number>
   propuestas: Record<string, { propuestas: number; apodos: number }>
   propuestasRefs: Array<{ id: number; ts: number; autor: string | null; texto: string }>
   hablandoMs: number
@@ -113,8 +111,6 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
   }))
   const mananas: Record<string, number> = {}
   const noches: Record<string, number> = {}
-  const mananasSet: Record<string, Set<string>> = {}
-  const nochesSet: Record<string, Set<string>> = {}
   const propuestas: Record<string, { propuestas: number; apodos: number }> = {}
   const propuestasRefs: Array<{ id: number; ts: number; autor: string | null; texto: string }> = []
   let hablandoMs = 0
@@ -243,12 +239,10 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
         const nDias = (norm.match(RE_DIAS) ?? []).length
         if (nDias) {
           mananas[m.autor] = (mananas[m.autor] ?? 0) + nDias
-          ;(mananasSet[m.autor] ??= new Set()).add(claveDia)
         }
         const nNoches = (norm.match(RE_NOCHE) ?? []).length
         if (nNoches) {
           noches[m.autor] = (noches[m.autor] ?? 0) + nNoches
-          ;(nochesSet[m.autor] ??= new Set()).add(claveDia)
         }
 
         let nProp = 0
@@ -418,10 +412,8 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
       : null
 
   let rapida: { gap: number; autor: string; ts: number } | null = null
-  let tardia: { gap: number; autor: string; ts: number } | null = null
   for (const it of intercambios) {
     if (!rapida || it.gap < rapida.gap) rapida = it
-    if (!tardia || it.gap > tardia.gap) tardia = it
   }
 
   const dias = Object.values(porDia).sort((a, b) => a.ts - b.ts)
@@ -440,11 +432,6 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
   for (const [clave, ids] of Object.entries(ejemplosCurios)) {
     ejemplos[clave] = ids.slice(-20)
   }
-
-  const mananasDias: Record<string, number> = {}
-  for (const [autor, s] of Object.entries(mananasSet)) mananasDias[autor] = s.size
-  const nochesDiasAutor: Record<string, number> = {}
-  for (const [autor, s] of Object.entries(nochesSet)) nochesDiasAutor[autor] = s.size
 
   return {
     total: chat.mensajes.length,
@@ -467,7 +454,7 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
     respuestaTramos,
     respuestaMeses,
     respuestaTendencia,
-    respuestaRecord: { rapida, tardia },
+    respuestaRecord: { rapida },
     eliminados,
     pendientes,
     palabrasTotal,
@@ -476,8 +463,6 @@ export function calcularEstadisticas(chat: Chat, horario: Horario, mapeo: Mapeo)
     inicia,
     mananas,
     noches,
-    mananasDias,
-    nochesDiasAutor,
     propuestas,
     propuestasRefs,
     hablandoMs,

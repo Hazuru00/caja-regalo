@@ -95,6 +95,21 @@ const StatsTab = memo(function StatsTab({
     1,
   )
 
+  const entsProp = Object.entries(st.propuestas)
+  const totalProp = entsProp.reduce((a, [, p]) => a + p.propuestas, 0)
+  const totalApodos = entsProp.reduce((a, [, p]) => a + p.apodos, 0)
+  const reyProp = [...entsProp].sort((a, b) => b[1].propuestas - a[1].propuestas)[0]
+  const entsMan = Object.entries(st.mananas)
+  const totalMananas = entsMan.reduce((a, [, n]) => a + n, 0)
+  const reyManana = [...entsMan].sort((a, b) => b[1] - a[1])[0]
+  const entsNoch = Object.entries(st.noches)
+  const totalNoches = entsNoch.reduce((a, [, n]) => a + n, 0)
+  const reyNoche = [...entsNoch].sort((a, b) => b[1] - a[1])[0]
+  const madTotal = autores.reduce(
+    (a, [autor]) => a + (st.porHoraAutor[autor] ?? []).slice(0, 6).reduce((x, y) => x + y, 0),
+    0,
+  )
+
   const [umbralIn, setUmbralIn] = useState(UMBRALES_INICIO[0])
   const [muestra, setMuestra] = useState<{ clave: string; titulo: string } | null>(null)
   const [infoToque, setInfoToque] = useState<{ sec: string; txt: string } | null>(null)
@@ -311,18 +326,17 @@ const StatsTab = memo(function StatsTab({
 
       <section className="wc-tarjeta">
         <h3>🌅 Buenos días y buenas noches</h3>
-        {autores.map(([autor]) => {
-          const mad = (st.porHoraAutor[autor] ?? []).slice(0, 6).reduce((a, b) => a + b, 0)
-          const total = st.porAutor[autor] ?? 1
-          return (
-            <p key={autor} className="wc-suave">
-              {etiquetaAutor(autor)}: 🌤 {((st.mananas[autor] ?? 0).toLocaleString('es'))} buenos días (
-              {(st.mananasDias[autor] ?? 0).toLocaleString('es')} días) · 🌙 {((st.noches[autor] ?? 0).toLocaleString('es'))}{' '}
-              buenas noches ({(st.nochesDiasAutor[autor] ?? 0).toLocaleString('es')} días) · 🦉 {mad.toLocaleString('es')}{' '}
-              mensajes entre 0 y 6 h ({Math.round((mad / total) * 100)}% de los suyos)
-            </p>
-          )
-        })}
+        {(totalMananas > 0 || totalNoches > 0) && (
+          <p className="wc-suave">
+            🌤 {totalMananas.toLocaleString('es')} buenos días
+            {reyManana && reyManana[1] > 0
+              ? ` — quien más: ${etiquetaAutor(reyManana[0])} (${reyManana[1].toLocaleString('es')})`
+              : ''}{' '}
+            · 🌙 {totalNoches.toLocaleString('es')} buenas noches
+            {reyNoche && reyNoche[1] > 0 ? ` — quien más: ${etiquetaAutor(reyNoche[0])} (${reyNoche[1].toLocaleString('es')})` : ''}
+          </p>
+        )}
+        <p className="wc-suave">🦉 {madTotal.toLocaleString('es')} mensajes entre 0 y 6 h</p>
         <p className="wc-suave">
           Cuenta solo mensajes con texto — los audios (de esos hay muchos 😅) no se pueden leer.
         </p>
@@ -330,16 +344,16 @@ const StatsTab = memo(function StatsTab({
 
       <section className="wc-tarjeta">
         <h3>💍 Propuestas y apodos de casados</h3>
-        {autores.map(([autor]) => {
-          const p = st.propuestas[autor]
-          if (!p) return null
-          return (
-            <p key={autor} className="wc-suave">
-              {etiquetaAutor(autor)}: 💍 {p.propuestas.toLocaleString('es')} propuestas · 💑 {p.apodos.toLocaleString('es')} apodos
-            </p>
-          )
-        })}
-        {Object.keys(st.propuestas).length === 0 && (
+        {entsProp.length > 0 && (
+          <p className="wc-suave">
+            💍 {totalProp.toLocaleString('es')} propuestas en total
+            {reyProp && reyProp[1].propuestas > 0
+              ? ` — quien más propone: ${etiquetaAutor(reyProp[0])} (${reyProp[1].propuestas.toLocaleString('es')})`
+              : ''}{' '}
+            · 💑 {totalApodos.toLocaleString('es')} apodos
+          </p>
+        )}
+        {entsProp.length === 0 && (
           <p className="wc-suave">Todavía no han dicho "casémonos" por escrito… 👀</p>
         )}
         {st.propuestasRefs.length > 0 && (
@@ -813,12 +827,6 @@ const StatsTab = memo(function StatsTab({
         {st.respuestaRecord.rapida && (
           <p className="wc-suave">
             ⚡ Récord de respuesta: {minutosATexto(st.respuestaRecord.rapida.gap)} — {etiquetaAutor(st.respuestaRecord.rapida.autor)}
-          </p>
-        )}
-        {st.respuestaRecord.tardia && (
-          <p className="wc-suave">
-            🦥 La más tardía: {minutosATexto(st.respuestaRecord.tardia.gap)} — {etiquetaAutor(st.respuestaRecord.tardia.autor)},{' '}
-            {fechaCorta(st.respuestaRecord.tardia.ts)}
           </p>
         )}
         {hayTramos && (
