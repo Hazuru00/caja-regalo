@@ -1,7 +1,6 @@
 import type { MediaTipo } from './tipos'
 import { normalizar, STOPWORDS } from '../../lib/texto'
 import type { Chat, Horario, Mapeo, Mensaje } from './tipos'
-import { FRASES } from './frases'
 
 export const MEDIA_INFO: Record<MediaTipo, { icono: string; label: string }> = {
   sticker: { icono: '🎨', label: 'Sticker' },
@@ -517,12 +516,6 @@ export function esAfirmacion(p: string): boolean {
   return /^[siz]{3,}$/.test(p)
 }
 
-export function esBesito(p: string): boolean {
-  if (p.length < 3 || !/^[maui]+$/.test(p)) return false
-  if (!p.includes('m') || !p.includes('a')) return false
-  return p !== 'mama' && p !== 'mima' && p !== 'mimo'
-}
-
 const CASAMIENTO = new Set([
   'casar',
   'casarse',
@@ -650,52 +643,4 @@ export function semanasDe(mensajes: Mensaje[], gMs: number) {
     if (m.autor) s.porAutor[m.autor] = (s.porAutor[m.autor] ?? 0) + 1
   }
   return [...mapa.values()].sort((a, b) => a.ts - b.ts)
-}
-
-export const EMOJIS_CARIÑO = new Set(['🥰', '😘', '😗', '😙', '❤', '💕', '💖', '💗', '💘', '💋', '🥺', '🫂', '😍', '😻', '💞', '♥'])
-
-export function frasePorSemana(chat: Chat, normTextos: string[], gMs: number) {
-  const regexes = FRASES.map((f) => ({ label: f.label, re: regexDeFrase(f.variantes) }))
-  const buckets = new Map<number, { ts: number; conteos: Record<string, number>; emojis: number; stickers: number; besitos: number }>()
-  for (let i = 0; i < chat.mensajes.length; i++) {
-    const m = chat.mensajes[i]
-    if (!m.ts || !m.autor) continue
-    const norm = normTextos[i]
-    const lunes = inicioSemana(m.ts + gMs)
-    let b = buckets.get(lunes)
-    if (!b) {
-      b = { ts: lunes, conteos: {}, emojis: 0, stickers: 0, besitos: 0 }
-      buckets.set(lunes, b)
-    }
-    if (m.media === 'sticker') b.stickers++
-    if (norm) {
-      for (const { label, re } of regexes) {
-        const n = (norm.match(re) ?? []).length
-        if (n) b.conteos[label] = (b.conteos[label] ?? 0) + n
-      }
-      for (const t of norm.split(' ')) {
-        if (esBesito(t.replace(/[^\p{L}]/gu, ''))) b.besitos++
-      }
-    }
-    if (m.texto) {
-      for (const ch of m.texto.match(/\p{Extended_Pictographic}/gu) ?? []) {
-        if (EMOJIS_CARIÑO.has(ch)) b.emojis++
-      }
-    }
-  }
-  return [...buckets.values()]
-    .sort((a, b) => a.ts - b.ts)
-    .map((b) => {
-      const opciones: Array<[string, number]> = Object.entries(b.conteos)
-      if (b.stickers > 0) opciones.push(['Stickers 🎨', b.stickers])
-      if (b.besitos > 0) opciones.push(['Besitos 💋', b.besitos])
-      if (b.emojis > 0) opciones.push(['Emojis tiernos 🥰', b.emojis])
-      const orden = opciones.sort((a, z) => z[1] - a[1])
-      const mejor = orden[0]
-      return {
-        ts: b.ts,
-        ganadora: mejor ? { label: mejor[0], n: mejor[1] } : null,
-        top: orden.slice(0, 3).map(([label, n]) => ({ label, n })),
-      }
-    })
 }

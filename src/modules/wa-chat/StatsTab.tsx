@@ -1,10 +1,9 @@
-import { Fragment, memo, useState, useMemo } from 'react'
+import { memo, useState, useMemo } from 'react'
 import type { Chat, Horario, Mapeo, MediaTipo } from './tipos'
 import {
   calcularEstadisticas,
   desfaseGlobal,
   fechaCorta,
-  frasePorSemana,
   minutosATexto,
   MEDIA_INFO,
   NOMBRE_ELLA,
@@ -19,7 +18,6 @@ const TRAMOS_RESP = ['⚡ <10 s', '🚀 10-60 s', '💬 1-5 min', '🐢 5-30 min
 const TRAMOS_EMOJI = ['⚡', '🚀', '💬', '🐢', '🦥']
 const MEDIA_ORDEN: MediaTipo[] = ['sticker', 'voz', 'audio', 'video', 'imagen', 'gif', 'documento', 'contacto', 'ubicacion', 'album']
 const FAM_EMOJI: Record<string, string> = { ja: '😂', je: '😄', ji: '😁', js: '🤣', xd: '😆', tecleo: '🎹', otra: '💬' }
-const SIN_COMILLAS = new Set(['Stickers 🎨', 'Besitos 💋', 'Emojis tiernos 🥰'])
 
 function horaTexto(h: number) {
   return `${h % 12 || 12}${h < 12 ? ' a. m.' : ' p. m.'}`
@@ -30,20 +28,17 @@ const StatsTab = memo(function StatsTab({
   mapeo,
   horario,
   onHorario,
-  normTextos,
   onIrA,
 }: {
   chat: Chat
   mapeo: Mapeo
   horario: Horario
   onHorario: (h: Horario) => void
-  normTextos: string[]
   onIrA: (id: number) => void
 }) {
   const gMs = desfaseGlobal(horario) * 3600000
   const st = useMemo(() => calcularEstadisticas(chat, horario, mapeo), [chat, horario, mapeo])
   const semanas = useMemo(() => semanasDe(chat.mensajes, gMs), [chat, gMs])
-  const frasesSemana = useMemo(() => frasePorSemana(chat, normTextos, gMs), [chat, normTextos, gMs])
 
   const hitos = useMemo(() => {
     const res: Array<{ id: number; ts: number; autor: string | null; label: string; preview: string }> = []
@@ -93,7 +88,6 @@ const StatsTab = memo(function StatsTab({
   const maxPalabras = Math.max(...filasPalabras.map((f) => f.palabras), 1)
 
   const maxSemana = Math.max(...semanas.map((s) => s.total), 1)
-  const maxFrasesem = Math.max(...frasesSemana.map((f) => f.ganadora?.n ?? 0), 1)
   const maxDurBloque = Math.max(...st.bloques.map((b) => b.dur), 1)
   const maxCalor = Math.max(...st.calor.flat(), 1)
   const maxAvg = Math.max(
@@ -104,20 +98,6 @@ const StatsTab = memo(function StatsTab({
   const [umbralIn, setUmbralIn] = useState(UMBRALES_INICIO[0])
   const [muestra, setMuestra] = useState<{ clave: string; titulo: string } | null>(null)
   const [infoToque, setInfoToque] = useState<{ sec: string; txt: string } | null>(null)
-  const lunesActual = useMemo(() => {
-    const d = new Date()
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7)).getTime()
-  }, [])
-  const etiquetaSemana = (ts: number) => {
-    const dif = Math.round((lunesActual - ts) / 604800000)
-    if (dif === 0) return 'Esta semana'
-    if (dif === 1) return 'Semana anterior'
-    return fechaCorta(ts)
-  }
-  const toqueCariño = (ts: number) => {
-    const sec = `cariño-${ts}`
-    setInfoToque((p) => (p?.sec === sec ? null : { sec, txt: '' }))
-  }
   const filaIn = st.inicia.find((x) => x.umbral === umbralIn) ?? st.inicia[0]
   const filasInicia = autores.map(([autor]) => ({ autor, n: filaIn.porAutor[autor] ?? 0 }))
   const totalInicia = filasInicia.reduce((a, f) => a + f.n, 0) || 1
@@ -916,40 +896,6 @@ const StatsTab = memo(function StatsTab({
             {infoToque?.sec.startsWith('med-') && <p className="wc-toque-info">{infoToque.txt}</p>}
           </>
         )}
-      </section>
-
-      <section className="wc-tarjeta">
-        <h3>💌 Cariño por semana</h3>
-        <p className="wc-suave">
-          Lo más cariñoso de cada semana: frases, stickers 🎨 y besitos escritos (muamuamua…). Toca una semana para ver su top.
-        </p>
-        {frasesSemana
-          .filter((f) => f.ganadora)
-          .map((f) => (
-            <Fragment key={f.ts}>
-              <button
-                type="button"
-                className="wc-barra-fila wc-salta"
-                aria-expanded={infoToque?.sec === `cariño-${f.ts}`}
-                onClick={() => toqueCariño(f.ts)}
-              >
-                <span className="wc-barra-nombre">{etiquetaSemana(f.ts)}</span>
-                <div className="wc-barra">
-                  <div className="wc-barra-fill" style={{ width: `${((f.ganadora?.n ?? 0) / maxFrasesem) * 100}%` }} />
-                </div>
-                <span className="wc-barra-valor wc-ancho">
-                  {SIN_COMILLAS.has(f.ganadora?.label ?? '') ? f.ganadora?.label : `“${f.ganadora?.label}”`} × {f.ganadora?.n}
-                </span>
-              </button>
-              {infoToque?.sec === `cariño-${f.ts}` && (
-                <p className="wc-toque-info">
-                  {f.top
-                    .map((t) => `${SIN_COMILLAS.has(t.label) ? t.label : `“${t.label}”`} × ${t.n.toLocaleString('es')}`)
-                    .join(' · ')}
-                </p>
-              )}
-            </Fragment>
-          ))}
       </section>
     </div>
   )

@@ -279,7 +279,7 @@ export default function WaChat({ onVolver }: { onVolver: () => void }) {
             )}
             {tabsVistas.includes('stats') && (
               <div className="wc-tab-panel" hidden={tab !== 'stats'}>
-                <StatsTab chat={chat} mapeo={mapeo} horario={horario} onHorario={cambiarHorario} normTextos={normTextos} onIrA={irA} />
+                <StatsTab chat={chat} mapeo={mapeo} horario={horario} onHorario={cambiarHorario} onIrA={irA} />
               </div>
             )}
             {tabsVistas.includes('cine') && (
