@@ -20,6 +20,10 @@ import './wa-chat.css'
 
 type Pestania = 'chat' | 'stats' | 'cine' | 'canciones' | 'palabras' | 'favoritos'
 
+// La pestaña de Canciones se oculta de la UI porque todavía no está pulida.
+// El código de CancionesTab queda intacto: se reactiva cambiando esta bandera.
+const MOSTRAR_CANCIONES = false
+
 function leerHorario(): Horario {
   try {
     const crudo = localStorage.getItem('wc-horario')
@@ -145,7 +149,9 @@ export default function WaChat({ onVolver }: { onVolver: () => void }) {
     })
   }, [])
 
-  const ordenTabs: Pestania[] = ['chat', 'stats', 'cine', 'canciones', 'palabras', 'favoritos']
+  const ordenTabs: Pestania[] = (
+    ['chat', 'stats', 'cine', 'canciones', 'palabras', 'favoritos'] as Pestania[]
+  ).filter((t) => MOSTRAR_CANCIONES || t !== 'canciones')
   const tactoRef = useRef({ x: 0, y: 0, eje: '' as '' | 'h' | 'v', valido: true })
   const ultimaDeslizRef = useRef(0)
 
@@ -237,9 +243,11 @@ export default function WaChat({ onVolver }: { onVolver: () => void }) {
           <button className={tab === 'cine' ? 'activo' : ''} onClick={() => cambiarTab('cine')}>
             🎬 Cine
           </button>
-          <button className={tab === 'canciones' ? 'activo' : ''} onClick={() => cambiarTab('canciones')}>
-            🎵 Canciones
-          </button>
+          {MOSTRAR_CANCIONES && (
+            <button className={tab === 'canciones' ? 'activo' : ''} onClick={() => cambiarTab('canciones')}>
+              🎵 Canciones
+            </button>
+          )}
           <button className={tab === 'palabras' ? 'activo' : ''} onClick={() => cambiarTab('palabras')}>
             🔤 Palabras
           </button>
@@ -287,7 +295,7 @@ export default function WaChat({ onVolver }: { onVolver: () => void }) {
                 <CineTab chat={chat} mapeo={mapeo} horario={horario} onIrA={irA} />
               </div>
             )}
-            {tabsVistas.includes('canciones') && (
+            {MOSTRAR_CANCIONES && tabsVistas.includes('canciones') && (
               <div className="wc-tab-panel" hidden={tab !== 'canciones'}>
                 <CancionesTab chat={chat} mapeo={mapeo} horario={horario} onIrA={irA} />
               </div>
