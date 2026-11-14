@@ -29,8 +29,11 @@ export default function Home({ onBloquear }: { onBloquear: () => void }) {
       const h = el.clientHeight
       const px = 0.6 * w
       const py = 1.45 * h
-      const rx = Math.min(0.9 * w - 56, w - 130)
-      const ry = 126
+      // En móvil el cielo es estrecho: el astro se va a la esquina superior
+      // para no caer encima del regalo de la portada.
+      const estrecho = w < 520
+      const rx = estrecho ? w - 92 : Math.min(0.9 * w - 56, w - 130)
+      const ry = estrecho ? 92 : 126
       const dx = rx - px
       const dy = py - ry
       const r = Math.hypot(dx, dy)

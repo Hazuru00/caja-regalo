@@ -764,9 +764,9 @@ a {
   position: absolute;
   left: var(--rx);
   top: var(--ry);
-  /* debe tapar también los rayos del sol (48 + 30 = 78 de radio) */
-  width: calc(var(--astro) + 64px);
-  height: calc(var(--astro) + 64px);
+  /* debe tapar también los rayos del sol (radio del astro + 30 de rayos) */
+  width: calc(var(--astro) + 60px);
+  height: calc(var(--astro) + 60px);
   border-radius: 50%;
   /* silueta de la luna: negro rotundo, sin brillos */
   background: radial-gradient(circle at 41% 36%, #0c0e1c 0%, #05060f 55%, #010208 100%);
@@ -797,7 +797,7 @@ a {
 .home-eclipse::after {
   content: '';
   position: absolute;
-  inset: -34px;
+  inset: calc(var(--astro) * -0.42);
   border-radius: 50%;
   background:
     repeating-conic-gradient(
@@ -818,8 +818,8 @@ a {
     radial-gradient(
       circle,
       transparent 66%,
-      rgba(255, 250, 225, 0.22) 72%,
-      rgba(255, 244, 205, 0.08) 86%,
+      rgba(255, 250, 225, 0.14) 72%,
+      rgba(255, 244, 205, 0.05) 86%,
       transparent 97%
     );
   -webkit-mask: radial-gradient(circle, transparent 67%, #000 71%, rgba(0, 0, 0, 0.35) 86%, transparent 97%);
@@ -1009,7 +1009,12 @@ a {
   }
 
   .home-cielo {
-    --astro: 76px;
+    --astro: 68px;
+  }
+
+  /* el regalo baja para no chocar con el astro ni con su corona */
+  .home-portada {
+    padding-top: 78px;
   }
 }
 
