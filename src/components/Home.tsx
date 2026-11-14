@@ -8,6 +8,7 @@ const FASE_LUNA = Math.floor(Date.now() / 86400000) % 3
 
 export default function Home({ onBloquear }: { onBloquear: () => void }) {
   const [eclipse, setEclipse] = useState(false)
+  const [eclipseSaliendo, setEclipseSaliendo] = useState(false)
   const [bloqueoTema, setBloqueoTema] = useState(false)
   const cieloRef = useRef<HTMLDivElement>(null)
   const estrellaRef = useRef<HTMLSpanElement>(null)
@@ -65,8 +66,16 @@ export default function Home({ onBloquear }: { onBloquear: () => void }) {
 
   useEffect(() => {
     if (!eclipse) return
-    const t = setTimeout(() => setEclipse(false), 4500)
-    return () => clearTimeout(t)
+    // 4.5 s de totalidad y luego la sombra sigue de largo
+    const t1 = setTimeout(() => setEclipseSaliendo(true), 4500)
+    const t2 = setTimeout(() => {
+      setEclipse(false)
+      setEclipseSaliendo(false)
+    }, 5600)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
   }, [eclipse])
 
   useEffect(() => {
@@ -96,14 +105,14 @@ export default function Home({ onBloquear }: { onBloquear: () => void }) {
 
   return (
     <>
-      <div className="home-cielo" ref={cieloRef} aria-hidden="true">
+      <div className={`home-cielo ${eclipse ? 'con-eclipse' : ''}`} ref={cieloRef} aria-hidden="true">
         <span className="cielo-brazo cielo-brazo-sol">
           <span className="cielo-astro cielo-sol" />
         </span>
         <span className="cielo-brazo cielo-brazo-luna">
           <span className={`cielo-astro cielo-luna fase-${FASE_LUNA}`} />
         </span>
-        <span className={`home-eclipse ${eclipse ? 'activo' : ''}`} />
+        <span className={`home-eclipse ${eclipse ? 'activo' : ''} ${eclipseSaliendo ? 'saliendo' : ''}`} />
       </div>
       <header className="app-barra home-barra">
         <div>

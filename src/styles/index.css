@@ -470,7 +470,9 @@ a {
 }
 
 /* Ambiente del menú mientras dura el eclipse: la escena se atenúa
-   y un halo cálido (rojo en oscuro) resplandece junto al astro */
+   y un halo cálido (rojo en oscuro) resplandece junto al astro.
+   El halo va centrado en el sol (67% x / 14% y), que es donde está
+   el astro: antes estaba en el 85% y quedaba como un anillo suelto. */
 .app-home::after {
   content: '';
   position: fixed;
@@ -481,23 +483,23 @@ a {
   transition: opacity 0.9s ease;
   background:
     radial-gradient(
-      60% 45% at 85% 13%,
-      transparent 0 15%,
-      rgba(255, 186, 92, 0.34) 30%,
-      rgba(255, 170, 80, 0.16) 46%,
-      transparent 68%
+      54% 42% at 67% 14%,
+      transparent 0 12%,
+      rgba(255, 186, 92, 0.22) 28%,
+      rgba(255, 170, 80, 0.1) 44%,
+      transparent 64%
     ),
-    linear-gradient(rgba(18, 20, 48, 0.34), rgba(12, 14, 36, 0.42));
+    linear-gradient(rgba(12, 14, 38, 0.5), rgba(8, 10, 28, 0.62));
 }
 
 [data-tema='oscuro'] .app-home::after {
   background:
     radial-gradient(
-      60% 45% at 85% 13%,
-      transparent 0 15%,
-      rgba(255, 84, 64, 0.36) 30%,
-      rgba(230, 50, 40, 0.18) 46%,
-      transparent 68%
+      54% 42% at 67% 14%,
+      transparent 0 12%,
+      rgba(255, 84, 64, 0.26) 28%,
+      rgba(230, 50, 40, 0.12) 44%,
+      transparent 64%
     ),
     linear-gradient(rgba(5, 7, 20, 0.4), rgba(3, 5, 16, 0.5));
 }
@@ -718,6 +720,7 @@ a {
   -webkit-mask: radial-gradient(circle, transparent 45%, #000 49%);
   mask: radial-gradient(circle, transparent 45%, #000 49%);
   animation: rayos-gira 30s linear infinite;
+  will-change: transform;
 }
 
 .cielo-luna {
@@ -756,48 +759,73 @@ a {
   background: rgba(10, 14, 40, 0.93);
 }
 
+/* ——— Eclipse: la sombra de la luna tapa el sol y deja la corona ——— */
 .home-eclipse {
   position: absolute;
   left: var(--rx);
   top: var(--ry);
-  width: calc(var(--astro) + 14px);
-  height: calc(var(--astro) + 14px);
+  /* debe tapar también los rayos del sol (48 + 30 = 78 de radio) */
+  width: calc(var(--astro) + 64px);
+  height: calc(var(--astro) + 64px);
   border-radius: 50%;
-  background: radial-gradient(circle at 38% 34%, #14182b 0%, #070913 60%, #04050c 100%);
+  /* silueta de la luna: negro rotundo, sin brillos */
+  background: radial-gradient(circle at 41% 36%, #0c0e1c 0%, #05060f 55%, #010208 100%);
   opacity: 0;
-  transform: translate(-50%, -50%) translateX(-170px);
-  transition: transform 0.55s cubic-bezier(0.34, 1.35, 0.64, 1), opacity 0.45s ease;
-  box-shadow:
-    0 0 0 2px rgba(255, 253, 240, 0.98),
-    0 0 10px 3px rgba(255, 246, 210, 0.95),
-    0 0 30px 9px rgba(255, 220, 150, 0.7),
-    0 0 80px 28px rgba(255, 205, 120, 0.3),
-    0 0 170px 70px rgba(255, 230, 170, 0.12);
+  transform: translate(-50%, -50%) translateX(-215px);
+  transition: transform 1.5s cubic-bezier(0.45, 0.05, 0.22, 1), opacity 0.4s ease;
   pointer-events: none;
+  z-index: 3;
 }
 
-/* estelas de la corona, girando lento */
+/* limbo brillante + protuberancias (bultos de fuego) en el borde */
 .home-eclipse::before {
   content: '';
   position: absolute;
-  inset: -55%;
+  inset: 0;
   border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, rgba(255, 244, 216, 0.55) 0deg 3deg, transparent 3deg 16deg);
-  -webkit-mask: radial-gradient(circle, transparent 40%, #000 50%, transparent 75%);
-  mask: radial-gradient(circle, transparent 40%, #000 50%, transparent 75%);
-  animation: rayos-gira 55s linear infinite;
+  background:
+    radial-gradient(circle at 50% 1%, #fffdf0 0 1.2px, transparent 2px),
+    radial-gradient(circle at 8% 74%, #ffd9a0 0 1px, transparent 1.7px),
+    radial-gradient(circle at 85% 69%, #fffbe8 0 1.4px, rgba(255, 240, 200, 0.85) 1.4px 2.2px, transparent 3px),
+    radial-gradient(circle, transparent 95%, rgba(255, 252, 236, 0.95) 97.5%, rgba(255, 246, 214, 0.5) 99.2%, transparent 100%);
+  box-shadow: 0 0 0 1.2px rgba(255, 252, 236, 0.9), 0 0 10px 2px rgba(255, 244, 210, 0.35);
+  opacity: 0;
 }
 
-/* segunda capa de estelas, en contra-rotación (rompe la uniformidad) */
+/* serpentinas de la corona: tres patrones de periodía distinta se "baten"
+   entre sí y rompen la regularidad (si no, parece un círculo de guiones) */
 .home-eclipse::after {
   content: '';
   position: absolute;
-  inset: -40%;
+  inset: -34px;
   border-radius: 50%;
-  background: repeating-conic-gradient(from 11deg, rgba(255, 236, 190, 0.35) 0deg 2deg, transparent 2deg 27deg);
-  -webkit-mask: radial-gradient(circle, transparent 42%, #000 54%, transparent 80%);
-  mask: radial-gradient(circle, transparent 42%, #000 54%, transparent 80%);
-  animation: rayos-gira 95s linear infinite reverse;
+  background:
+    repeating-conic-gradient(
+      from 3deg,
+      rgba(255, 255, 246, 0.8) 0deg 1.1deg,
+      transparent 1.1deg 17deg
+    ),
+    repeating-conic-gradient(
+      from 11deg,
+      rgba(255, 255, 246, 0.45) 0deg 0.8deg,
+      transparent 0.8deg 23deg
+    ),
+    repeating-conic-gradient(
+      from 5deg,
+      rgba(255, 255, 246, 0.3) 0deg 0.6deg,
+      transparent 0.6deg 29deg
+    ),
+    radial-gradient(
+      circle,
+      transparent 66%,
+      rgba(255, 250, 225, 0.22) 72%,
+      rgba(255, 244, 205, 0.08) 86%,
+      transparent 97%
+    );
+  -webkit-mask: radial-gradient(circle, transparent 67%, #000 71%, rgba(0, 0, 0, 0.35) 86%, transparent 97%);
+  mask: radial-gradient(circle, transparent 67%, #000 71%, rgba(0, 0, 0, 0.35) 86%, transparent 97%);
+  opacity: 0;
+  will-change: transform;
 }
 
 .home-eclipse.activo {
@@ -805,41 +833,92 @@ a {
   transform: translate(-50%, -50%);
 }
 
+/* la corona solo se enciende cuando ya hay totalidad */
+.home-eclipse.activo::before {
+  animation: corona-encender 0.45s ease-out 1.05s both;
+}
+.home-eclipse.activo::after {
+  animation: rayos-gira 38s linear infinite, corona-encender 0.6s ease-out 1s both;
+}
+
+/* la sombra sigue de largo y se desvanece */
+.home-eclipse.saliendo {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateX(52px);
+  transition: transform 1s ease-out, opacity 0.55s ease;
+}
+.home-eclipse.saliendo::before {
+  animation: corona-encender 0.5s ease-out both;
+}
+.home-eclipse.saliendo::after {
+  animation: rayos-gira 38s linear infinite, corona-encender 0.5s ease-out both;
+}
+
+/* el sol se apaga del todo al taparlo la luna */
+.con-eclipse .cielo-sol {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.con-eclipse .cielo-sol::before {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+/* al oscurecerse el cielo salen las estrellas */
+.con-eclipse .home-estrellas i {
+  opacity: 0.85;
+}
+
 [data-tema='oscuro'] .home-eclipse {
   background: radial-gradient(circle at 38% 34%, #1a0f14 0%, #0a0509 60%, #050307 100%);
-  box-shadow:
-    0 0 0 2px rgba(255, 214, 200, 0.98),
-    0 0 10px 3px rgba(255, 150, 130, 0.95),
-    0 0 30px 9px rgba(255, 80, 60, 0.7),
-    0 0 80px 28px rgba(230, 40, 40, 0.32),
-    0 0 170px 70px rgba(255, 90, 70, 0.14);
 }
-
 [data-tema='oscuro'] .home-eclipse::before {
-  background: repeating-conic-gradient(from 0deg, rgba(255, 140, 120, 0.5) 0deg 3deg, transparent 3deg 16deg);
+  box-shadow: 0 0 0 1.2px rgba(255, 224, 212, 0.9), 0 0 12px 3px rgba(255, 110, 90, 0.38);
 }
-
 [data-tema='oscuro'] .home-eclipse::after {
-  background: repeating-conic-gradient(from 11deg, rgba(255, 110, 90, 0.32) 0deg 2deg, transparent 2deg 27deg);
+  background: repeating-conic-gradient(
+    from 4deg,
+    rgba(255, 214, 200, 0.85) 0deg 1.1deg,
+    rgba(255, 150, 130, 0.12) 1.1deg 2.4deg,
+    transparent 2.4deg 5.2deg,
+    rgba(255, 190, 175, 0.5) 5.2deg 6deg,
+    transparent 6deg 10.5deg,
+    rgba(255, 140, 120, 0.25) 10.5deg 11.2deg,
+    transparent 11.2deg 17deg
+  );
 }
 
+/* El pulso va en el transform (no en box-shadow): box-shadow obliga a repintar
+   un blur de 130px cada frame (se notaba a pocos FPS) y este solo va por la GPU.
+   Ojo: el scale va al final de la cadena para que crezca sobre su centro
+   y el astro no se aleje del pivote. */
 @keyframes latido-sol {
   0%,
   100% {
-    box-shadow: 0 0 46px 14px rgba(255, 190, 80, 0.5), 0 0 130px 46px rgba(255, 160, 60, 0.22);
+    transform: translate(-50%, -50%) translateY(calc(-1 * var(--r))) scale(1);
   }
   50% {
-    box-shadow: 0 0 62px 20px rgba(255, 190, 80, 0.62), 0 0 170px 62px rgba(255, 160, 60, 0.3);
+    transform: translate(-50%, -50%) translateY(calc(-1 * var(--r))) scale(1.06);
   }
 }
 
 @keyframes latido-luna {
   0%,
   100% {
-    box-shadow: 0 0 60px 18px rgba(190, 175, 255, 0.3), 0 0 140px 55px rgba(150, 150, 255, 0.13);
+    transform: translate(-50%, -50%) translateY(calc(-1 * var(--r))) scale(1);
   }
   50% {
-    box-shadow: 0 0 78px 26px rgba(190, 175, 255, 0.42), 0 0 180px 70px rgba(150, 150, 255, 0.18);
+    transform: translate(-50%, -50%) translateY(calc(-1 * var(--r))) scale(1.06);
+  }
+}
+
+/* la corona prende cuando ya hay totalidad */
+@keyframes corona-encender {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
