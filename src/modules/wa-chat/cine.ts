@@ -19,7 +19,7 @@ export interface Ficha {
   generos: string[]
   resumen: string
   estado: string | null
-  fuente: 'tvmaze' | 'wiki'
+  fuente: 'tvmaze' | 'wiki' | 'local'
   menciones: Mencion[]
   recomendo: string[]
 }
@@ -436,27 +436,28 @@ async function obtenerFichasInterno(chat: Chat): Promise<Ficha[]> {
   const porId = new Map<string, Ficha>()
   candidatos.forEach((c, i) => {
     const meta = resultados[i].meta
-    if (!meta) return
+    // Sin metadatos (la API falló o no lo tiene): ficha local en vez de descartar el título
+    const id = meta ? meta.id : `local:${c.canon ?? c.clave}`
     const tipo: Ficha['tipo'] =
-      c.tipo ?? (meta.fuente === 'wiki' ? 'pelicula' : meta.tvTipo === 'Animation' ? 'anime' : 'serie')
-    const previo = porId.get(meta.id)
+      c.tipo ?? (meta?.fuente === 'wiki' ? 'pelicula' : meta?.tvTipo === 'Animation' ? 'anime' : 'serie')
+    const previo = porId.get(id)
     if (previo) {
       previo.menciones.push(...c.menciones)
       for (const a of c.recomendo) if (!previo.recomendo.includes(a)) previo.recomendo.push(a)
       return
     }
-    porId.set(meta.id, {
-      id: meta.id,
+    porId.set(id, {
+      id,
       canon: c.canon ?? '',
-      titulo: meta.titulo,
-      anio: meta.anio,
-      rating: meta.rating,
-      poster: meta.poster,
+      titulo: meta ? meta.titulo : (c.canon ?? c.clave),
+      anio: meta?.anio ?? null,
+      rating: meta?.rating ?? null,
+      poster: meta?.poster ?? null,
       tipo,
-      generos: meta.generos,
-      resumen: meta.resumen,
-      estado: meta.estado,
-      fuente: meta.fuente,
+      generos: meta?.generos ?? [],
+      resumen: meta?.resumen ?? '',
+      estado: meta?.estado ?? null,
+      fuente: meta?.fuente ?? 'local',
       menciones: c.menciones,
       recomendo: c.recomendo,
     })
