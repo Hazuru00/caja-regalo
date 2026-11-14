@@ -53,7 +53,9 @@ const WordsTab = memo(function WordsTab({ chat, mapeo, normTextos, onIrA, horari
         }
       }
       return { f, total, yo, ella, ids }
-    }).filter((x) => x.total > 0)
+    })
+      .filter((x) => x.total > 0)
+      .sort((a, b) => b.total - a.total)
   }, [chat, normTextos, mapeo])
 
   const topPalabrasCompleto = useMemo(() => contarPalabras(chat, null), [chat])
@@ -117,9 +119,9 @@ const WordsTab = memo(function WordsTab({ chat, mapeo, normTextos, onIrA, horari
     <div className="wc-words">
       <section className="wc-tarjeta">
         <h3>Frases favoritas</h3>
-        <p className="wc-suave">Con todas sus variantes: TE AMO, teee amoo, ti amo, love…</p>
+        <p className="wc-suave">Con todas sus variantes: TE AMO, teee amoo, ti amo, lovecito… «Mi amor» va dentro de «Amor».</p>
         <div className="wc-frases">
-          {conteosFrases.map(({ f, total, yo, ella }) => {
+          {conteosFrases.map(({ f, total, yo, ella, ids }) => {
             const activa = abierta?.tipo === 'frase' && abierta.clave === f.id
             return (
               <button key={f.id} className={`wc-frase ${activa ? 'activa' : ''}`} onClick={() => alternar({ tipo: 'frase', clave: f.id })}>
@@ -131,7 +133,8 @@ const WordsTab = memo(function WordsTab({ chat, mapeo, normTextos, onIrA, horari
                   <div className="wc-barra-fill" style={{ width: `${(total / maxFrase) * 100}%` }} />
                 </div>
                 <div className="wc-frase-quien">
-                  Moises {yo.toLocaleString('es')} · Jania {ella.toLocaleString('es')}
+                  Moises {yo.toLocaleString('es')} · Jania {ella.toLocaleString('es')} · en{' '}
+                  {ids.length.toLocaleString('es')} mensajes
                 </div>
               </button>
             )
