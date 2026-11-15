@@ -1,0 +1,384 @@
+.deseos-pantalla {
+  position: relative;
+  min-height: calc(100dvh - 250px);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 26px;
+  gap: 8px;
+}
+
+.deseos-cab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 2px 0;
+}
+
+.deseos-volver {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  color: #3a2f63;
+  font-size: 18px;
+  line-height: 1;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(60, 40, 110, 0.18);
+}
+
+.deseos-cab h1 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.15;
+  color: var(--home-titulo);
+}
+
+.deseos-sub {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--home-suave);
+}
+
+.deseos-cielo {
+  position: relative;
+  flex: 1;
+  min-height: 46vh;
+  margin: 4px 0 2px;
+  border-radius: 22px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* ——— polvo de estrellas ——— */
+.deseos-polvo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.deseos-polvo i {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff7e2;
+  transform: translate(-50%, -50%);
+  animation: polvo-late var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+}
+
+[data-tema='oscuro'] .deseos-polvo i {
+  background: #fff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.65);
+}
+
+@keyframes polvo-late {
+  0%,
+  100% {
+    opacity: calc(var(--o, 0.4) * 0.3);
+  }
+  50% {
+    opacity: var(--o, 0.4);
+  }
+}
+
+/* ——— constelación que une los deseos ——— */
+.deseos-lineas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.deseos-lineas polyline {
+  fill: none;
+  stroke: rgba(255, 196, 106, 0.5);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 3 5;
+  animation: lineas-mueven 14s linear infinite;
+}
+
+@keyframes lineas-mueven {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+
+[data-tema='oscuro'] .deseos-lineas polyline {
+  stroke: rgba(255, 220, 150, 0.38);
+}
+
+/* ——— estrellas ——— */
+.deseo-estrella {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  animation: deseo-late var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+
+.deseo-halo {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 208, 120, 0.55), rgba(255, 208, 120, 0) 68%);
+}
+
+.deseo-punto {
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle at 45% 40%, #fffdf2 0 18%, #ffd97a 45%, #f6a93b 100%);
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+
+.deseo-ella .deseo-halo {
+  background: radial-gradient(circle, rgba(255, 150, 200, 0.55), rgba(255, 150, 200, 0) 68%);
+}
+
+.deseo-ella .deseo-punto {
+  background: radial-gradient(circle at 45% 40%, #fff6fb 0 18%, #ffc2dd 48%, #f78fb3 100%);
+}
+
+@keyframes deseo-late {
+  0%,
+  100% {
+    opacity: 0.8;
+    scale: calc(var(--tam, 1) * 0.86);
+  }
+  50% {
+    opacity: 1;
+    scale: calc(var(--tam, 1) * 1.06);
+  }
+}
+
+.deseos-vacio {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--home-suave);
+  pointer-events: none;
+  animation: vacio-late 4s ease-in-out infinite;
+}
+
+@keyframes vacio-late {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ——— pie del módulo ——— */
+.deseos-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.deseos-prim {
+  padding: 11px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb347, #f78fb3);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 8px 22px rgba(240, 140, 120, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.deseos-prim:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(240, 140, 120, 0.42);
+}
+
+.deseos-prim:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: default;
+}
+
+.deseos-pie {
+  margin: 0;
+  max-width: 330px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--home-suave);
+}
+
+/* ——— hoja para pedir / leer ——— */
+.deseos-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(25, 18, 50, 0.38);
+  backdrop-filter: blur(3px);
+  animation: deseos-fondo-in 0.2s ease-out;
+}
+
+@keyframes deseos-fondo-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.deseos-hoja {
+  width: min(540px, 100%);
+  max-height: min(86dvh, 680px);
+  overflow: auto;
+  padding: 22px 20px calc(20px + env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  background: var(--panel);
+  color: var(--texto);
+  box-shadow: 0 -10px 40px rgba(20, 10, 50, 0.25);
+  animation: deseos-hoja-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes deseos-hoja-in {
+  from {
+    transform: translateY(30px);
+    opacity: 0.6;
+  }
+}
+
+.deseos-hoja h2 {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+
+.deseos-nota {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--texto-2);
+}
+
+.deseos-texto {
+  width: 100%;
+  resize: none;
+  padding: 12px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  background: var(--fondo-chat);
+  color: var(--texto);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.deseos-texto:focus {
+  border-color: #f0a35a;
+  box-shadow: 0 0 0 3px rgba(240, 163, 90, 0.18);
+}
+
+.deseos-firmas {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.deseos-firmas button {
+  padding: 7px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-2);
+  font-size: 13px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.deseos-firmas button.activo {
+  background: rgba(247, 143, 179, 0.16);
+  border-color: rgba(240, 130, 165, 0.55);
+  color: var(--texto);
+}
+
+.deseos-botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.deseos-sec {
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: var(--texto-2);
+}
+
+.deseos-sec:hover {
+  background: var(--hover);
+}
+
+.deseos-ver-estrella {
+  display: block;
+  text-align: center;
+  font-size: 30px;
+  color: #f6b13c;
+  text-shadow: 0 0 18px rgba(255, 190, 80, 0.7);
+}
+
+.deseos-ver-texto {
+  margin: 10px 0 6px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.deseos-ver-firma {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--texto-2);
+}
+
+@media (max-width: 639px) {
+  .deseos-cab {
+    padding-right: 80px;
+  }
+
+  .deseos-cab h1 {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 640px) {
+  .deseos-pantalla {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .deseos-cielo {
+    min-height: 52vh;
+  }
+
+  .deseos-fondo {
+    align-items: center;
+  }
+
+  .deseos-hoja {
+    border-radius: 22px;
+    padding-bottom: 22px;
+  }
+}

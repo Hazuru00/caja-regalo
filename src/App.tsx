@@ -5,6 +5,7 @@ import Gate from './components/Gate'
 import Home from './components/Home'
 import WaChat from './modules/wa-chat/WaChat'
 import Arbol from './modules/arbol/Arbol'
+import Deseos from './modules/deseos/Deseos'
 
 export default function App() {
   const [abierto, setAbierto] = useState(desbloqueado())
@@ -31,7 +32,11 @@ export default function App() {
             setAbierto(false)
           }}
         >
-          {ruta === '/arbol' ? <Arbol onVolver={() => navegar('/')} /> : null}
+          {ruta === '/arbol' ? (
+            <Arbol onVolver={() => navegar('/')} />
+          ) : ruta === '/deseos' ? (
+            <Deseos onVolver={() => navegar('/')} />
+          ) : null}
         </Home>
       )}
     </div>

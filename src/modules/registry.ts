@@ -18,4 +18,10 @@ export const modulos: Modulo[] = [
     desc: 'Un árbol que crece con nuestros mensajes y nuestros días juntos.',
     icono: '🌳',
   },
+  {
+    id: 'deseos',
+    nombre: 'El cielo de los deseos',
+    desc: 'Cada deseo se cuelga como una estrella y se queda para siempre.',
+    icono: '✨',
+  },
 ]
