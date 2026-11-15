@@ -24,4 +24,10 @@ export const modulos: Modulo[] = [
     desc: 'Cada deseo se cuelga como una estrella y se queda para siempre.',
     icono: '✨',
   },
+  {
+    id: 'hora',
+    nombre: 'La hora de los dos',
+    desc: 'Vuestros relojes, vuestros cielos y la franja en la que coincidís.',
+    icono: '🕰️',
+  },
 ]

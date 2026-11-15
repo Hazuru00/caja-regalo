@@ -6,6 +6,7 @@ import Home from './components/Home'
 import WaChat from './modules/wa-chat/WaChat'
 import Arbol from './modules/arbol/Arbol'
 import Deseos from './modules/deseos/Deseos'
+import Hora from './modules/hora/Hora'
 
 export default function App() {
   const [abierto, setAbierto] = useState(desbloqueado())
@@ -36,6 +37,8 @@ export default function App() {
             <Arbol onVolver={() => navegar('/')} />
           ) : ruta === '/deseos' ? (
             <Deseos onVolver={() => navegar('/')} />
+          ) : ruta === '/hora' ? (
+            <Hora onVolver={() => navegar('/')} />
           ) : null}
         </Home>
       )}

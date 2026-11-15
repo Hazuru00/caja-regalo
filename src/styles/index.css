@@ -981,6 +981,15 @@ a {
   -webkit-backdrop-filter: blur(8px);
 }
 
+/* el botón de volver de los módulos: sobre el cielo oscuro necesita más luz */
+[data-tema='oscuro'] .arbol-volver,
+[data-tema='oscuro'] .deseos-volver,
+[data-tema='oscuro'] .hora-volver {
+  background: rgba(255, 255, 255, 0.14);
+  color: #f0ecff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+}
+
 .pie {
   display: flex;
   justify-content: center;
