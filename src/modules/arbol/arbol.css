@@ -1,0 +1,325 @@
+.arbol-pantalla {
+  position: relative;
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 16px 28px;
+  gap: 6px;
+}
+
+.arbol-volver {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  color: #3a2f63;
+  font-size: 18px;
+  line-height: 1;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(60, 40, 110, 0.18);
+}
+
+.arbol-lienzo {
+  position: relative;
+  width: min(86vw, 420px);
+  flex: 1;
+  min-height: 46vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* un halo cálido detrás de la copa, como la luz del sol */
+.arbol-lienzo::before {
+  content: '';
+  position: absolute;
+  inset: 2% 0 10%;
+  background: radial-gradient(
+    circle at 55% 42%,
+    rgba(255, 244, 210, 0.28),
+    rgba(255, 244, 210, 0) 66%
+  );
+  pointer-events: none;
+}
+
+.arbol-svg {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 100%;
+  animation: arbol-balanceo 7.5s ease-in-out infinite;
+}
+
+@keyframes arbol-balanceo {
+  0%,
+  100% {
+    transform: rotate(-0.9deg) scale(1);
+  }
+  50% {
+    transform: rotate(0.9deg) scale(1.007);
+  }
+}
+
+.arbol-suelo {
+  fill: rgba(60, 40, 110, 0.12);
+}
+
+.arbol-ramas line {
+  stroke: #7b5233;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: arbol-dibujo 1s ease-out var(--d, 0s) forwards;
+}
+
+@keyframes arbol-dibujo {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* las hojas ondean: cada una con su ritmo */
+.arbol-hoja {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    arbol-hoja 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0s) both,
+    hoja-vuelo var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes hoja-vuelo {
+  0%,
+  100% {
+    rotate: -7deg;
+  }
+  50% {
+    rotate: 7deg;
+  }
+}
+
+@keyframes arbol-hoja {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* las flores se inclinan un poco, como si respiraran */
+.arbol-flor {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    arbol-flor 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0s) both,
+    flor-vaino var(--dur, 5s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes flor-vaino {
+  0%,
+  100% {
+    rotate: -5deg;
+  }
+  50% {
+    rotate: 5deg;
+  }
+}
+
+/* hojitas y pétalos de cerezo cayendo */
+.arbol-petalo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: petalo-vuela var(--dur, 10s) linear var(--delay, 0s) infinite;
+}
+
+@keyframes petalo-vuela {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  12% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 8px), var(--dy, 40px)) rotate(300deg);
+  }
+}
+
+/* la hierba se mece al pie del árbol */
+.arbol-hierba {
+  fill: none;
+  stroke-linecap: round;
+  animation: hierba-mecida var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes hierba-mecida {
+  0%,
+  100% {
+    rotate: -6deg;
+  }
+  50% {
+    rotate: 6deg;
+  }
+}
+
+/* luciérnagas: vagan despacio y parpadean */
+.arbol-luciernaga {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: luciernaga-vaga var(--dur, 10s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes luciernaga-vaga {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    translate: var(--dx, 0px) var(--dy, -20px);
+    opacity: 0;
+  }
+}
+
+.arbol-luciernaga-luz {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: luciernaga-pulso var(--pdur, 2.4s) ease-in-out var(--pdelay, 0s) infinite;
+}
+
+@keyframes luciernaga-pulso {
+  0%,
+  100% {
+    scale: 0.75;
+  }
+  50% {
+    scale: 1.15;
+  }
+}
+
+/* mariposas: pasean y aletean */
+.arbol-mariposa {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mariposa-vuela var(--dur, 18s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes mariposa-vuela {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  18% {
+    translate: calc(var(--dx, 10px) * 0.3) calc(var(--dy, -10px) * 0.35);
+  }
+  42% {
+    translate: calc(var(--dx, 10px) * 0.8) calc(var(--dy, -10px) * 0.7);
+  }
+  58% {
+    translate: var(--dx, 10px) var(--dy, -10px);
+  }
+  78% {
+    translate: calc(var(--dx, 10px) * 0.45) calc(var(--dy, -10px) * 1.15);
+  }
+}
+
+.arbol-mariposa-alas {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mariposa-alas 0.34s ease-in-out infinite alternate;
+}
+
+@keyframes mariposa-alas {
+  from {
+    scale: 1 0.92;
+  }
+  to {
+    scale: 0.32 1;
+  }
+}
+
+.arbol-pie {
+  text-align: center;
+  max-width: 420px;
+}
+
+.arbol-pie h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--home-titulo, #4b3f86);
+}
+
+.arbol-sub {
+  margin: 4px 0 12px;
+  font-size: 13.5px;
+  color: var(--home-suave, #6c6395);
+}
+
+.arbol-datos {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.arbol-datos div {
+  background: var(--home-tarjeta-bg, rgba(255, 255, 255, 0.72));
+  border: 1px solid var(--home-tarjeta-borde, rgba(255, 255, 255, 0.9));
+  border-radius: 14px;
+  padding: 8px 14px;
+  min-width: 92px;
+  box-shadow: var(--home-sombra, 0 8px 28px rgba(40, 30, 90, 0.12));
+  animation: dato-sube 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.arbol-datos div:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.arbol-datos div:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+@keyframes dato-sube {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.arbol-datos b {
+  display: block;
+  font-size: 17px;
+  color: var(--home-titulo, #4b3f86);
+}
+
+.arbol-datos span {
+  font-size: 12px;
+  color: var(--home-suave, #6c6395);
+}
+
+@media (max-width: 640px) {
+  .arbol-pantalla {
+    padding-top: 54px;
+  }
+}

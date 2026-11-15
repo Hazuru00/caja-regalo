@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { modulos } from '../modules/registry'
 import { navegar } from '../lib/router'
@@ -6,7 +6,13 @@ import BotonTema from './BotonTema'
 
 const FASE_LUNA = Math.floor(Date.now() / 86400000) % 3
 
-export default function Home({ onBloquear }: { onBloquear: () => void }) {
+export default function Home({
+  onBloquear,
+  children,
+}: {
+  onBloquear: () => void
+  children?: ReactNode
+}) {
   const [eclipse, setEclipse] = useState(false)
   const [eclipseSaliendo, setEclipseSaliendo] = useState(false)
   const [bloqueoTema, setBloqueoTema] = useState(false)
@@ -140,20 +146,24 @@ export default function Home({ onBloquear }: { onBloquear: () => void }) {
           <i />
           <span className="home-disparo" ref={estrellaRef} />
         </div>
-        <div className="home-portada">
-          <div className="corazon">🎁</div>
-          <h1>Nuestra caja</h1>
-          <p>Cosas bonitas, todas en un solo lugar.</p>
-        </div>
-        <div className="tarjetas">
-          {modulos.map((m) => (
-            <button key={m.id} className="tarjeta" onClick={() => navegar(`/${m.id}`)}>
-              <span className="icono">{m.icono}</span>
-              <h2>{m.nombre}</h2>
-              <p>{m.desc}</p>
-            </button>
-          ))}
-        </div>
+        {children ?? (
+          <>
+            <div className="home-portada">
+              <div className="corazon">🎁</div>
+              <h1>Nuestra caja</h1>
+              <p>Cosas bonitas, todas en un solo lugar.</p>
+            </div>
+            <div className="tarjetas">
+              {modulos.map((m) => (
+                <button key={m.id} className="tarjeta" onClick={() => navegar(`/${m.id}`)}>
+                  <span className="icono">{m.icono}</span>
+                  <h2>{m.nombre}</h2>
+                  <p>{m.desc}</p>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
         <div className="pie">
           <button className="boton-secundario" onClick={onBloquear}>
             🔒 Bloquear

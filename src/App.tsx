@@ -4,6 +4,7 @@ import { navegar, useRuta } from './lib/router'
 import Gate from './components/Gate'
 import Home from './components/Home'
 import WaChat from './modules/wa-chat/WaChat'
+import Arbol from './modules/arbol/Arbol'
 
 export default function App() {
   const [abierto, setAbierto] = useState(desbloqueado())
@@ -29,7 +30,9 @@ export default function App() {
             bloquear()
             setAbierto(false)
           }}
-        />
+        >
+          {ruta === '/arbol' ? <Arbol onVolver={() => navegar('/')} /> : null}
+        </Home>
       )}
     </div>
   )

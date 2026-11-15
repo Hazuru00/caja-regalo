@@ -12,4 +12,10 @@ export const modulos: Modulo[] = [
     desc: 'El chat completo de WhatsApp: burbujas, estadísticas, palabras y búsqueda.',
     icono: '💬',
   },
+  {
+    id: 'arbol',
+    nombre: 'Nuestro árbol',
+    desc: 'Un árbol que crece con nuestros mensajes y nuestros días juntos.',
+    icono: '🌳',
+  },
 ]
